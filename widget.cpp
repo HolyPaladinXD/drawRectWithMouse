@@ -18,7 +18,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
     }
 
     if((event->buttons() & Qt::LeftButton) && contains()){
-        //isDrawing = true;
+
         isSelected = true;
         update();
     }
@@ -31,6 +31,7 @@ void Widget::mouseReleaseEvent(QMouseEvent *event)
     }
 
     if((event->button() & Qt::LeftButton)){
+        prevPoint = event->position().toPoint();
         isSelected = false;
     }
 
@@ -43,8 +44,10 @@ void Widget::mouseMoveEvent(QMouseEvent *event)
         update();
     }
     if(isSelected){
-        QRect tmp = curRect;
-        curRect =
+        QPoint diff = event->pos() -  prevPoint;
+        curRect.translate(diff);
+        prevPoint = event->pos();
+        update();
     }
 
 }
