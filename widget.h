@@ -14,7 +14,6 @@ class Widget : public QWidget
     QRect curRect = QRect();
     QPoint startPoint;
     QPoint prevPoint;
-    bool contains() const;
 
 public:
     Widget(QWidget *parent = nullptr);
