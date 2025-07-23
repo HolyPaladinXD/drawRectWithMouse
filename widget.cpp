@@ -17,29 +17,34 @@ void Widget::mousePressEvent(QMouseEvent *event)
         this->update();
     }
 
-    else if(event->button() == Qt::LeftButton){
-        if(curRect.contains(event->pos())){
-            prevPoint = event->position().toPoint();
-            isSelected = true;
-
+    else{
+        if(event->button() == Qt::LeftButton){
+        for(int i = listRects.size()-1; i >= 0; i--){
+            if(listRects[i].contains(event->pos())){
+                selected = i;
+                isSelected = true;
+                prevPoint = event->pos();
+                break;
+            }
         }
-        else{
-            isSelected = false;
         }
-        update();
     }
 }
 
 void Widget::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::RightButton){
+        listRects.append(curRect);
         isDrawing = false;
     }
 
     if((event->button() ==  Qt::LeftButton)){
         curRect = curRect.normalized();
         isSelected = false;
+        selected = -1;
     }
+
+    update();
 
 }
 
@@ -47,14 +52,13 @@ void Widget::mouseMoveEvent(QMouseEvent *event)
 {
     if(isDrawing){
         curRect.setBottomRight(event->pos());
-        update();
     }
     if(isSelected){
         QPoint diff = event->pos() -  prevPoint;
-        curRect.translate(diff);
+        listRects[selected].translate(diff);
         prevPoint = event->pos();
-        update();
     }
+    update();
 
 }
 
@@ -62,19 +66,33 @@ void Widget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     QPen pen;
-
     pen.setWidth(5);
 
-    if(isSelected){
-        pen.setColor(Qt::red);
-        pen.setStyle(Qt::DashLine);
-    }
-    else{
+    if(isDrawing){
         pen.setColor(Qt::green);
         pen.setStyle(Qt::SolidLine);
+        painter.setPen(pen);
+        painter.drawRect(curRect);
     }
-    painter.setPen(pen);
-    painter.drawRect(curRect);
+
+    for(int i = listRects.size() -1; i >= 0; i--){
+        if(i == selected){
+            continue;
+        }
+        else{
+            pen.setColor(Qt::green);
+            pen.setStyle(Qt::SolidLine);
+            painter.setPen(pen);
+            painter.drawRect(listRects[i]);
+        }
+    }
+    if(selected >= 0){
+        pen.setColor(Qt::red);
+        pen.setStyle(Qt::DashLine);
+        painter.setPen(pen);
+        painter.drawRect(listRects[selected]);
+    }
+
 }
 
 void Widget::resizeEvent(QResizeEvent *event)

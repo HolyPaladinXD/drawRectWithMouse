@@ -11,9 +11,11 @@ class Widget : public QWidget
     bool isDrawing = false;
     bool isSelected = false;
 
+    QList<QRect> listRects;
     QRect curRect = QRect();
     QPoint startPoint;
     QPoint prevPoint;
+    int selected = -1;
 
 public:
     Widget(QWidget *parent = nullptr);
